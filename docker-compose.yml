@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # ─── Database Service (MySQL) ────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: hemoscan-db
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: brain_scan_db
+    ports:
+      - "3307:3306"
+    volumes:
+      # Automatically initialize database schema in order
+      - ./Backend/setup_db.sql:/docker-entrypoint-initdb.d/1_setup_db.sql
+      - ./Backend/add_notifications_table.sql:/docker-entrypoint-initdb.d/2_add_notifications_table.sql
+      - ./Backend/create_tickets_table.sql:/docker-entrypoint-initdb.d/3_create_tickets_table.sql
+      # Persist DB data on the host machine
+      - hemoscan-db-data:/var/lib/mysql
+
+  # ─── Backend Service (PHP Apache + Python AI) ────────────────────────────────
+  backend:
+    build:
+      context: ./Backend
+    container_name: hemoscan-backend
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: ""
+      DB_NAME: brain_scan_db
+    depends_on:
+      - db
+    volumes:
+      # Persist uploaded scans and user profile images
+      - ./Backend/uploads:/var/www/html/uploads
+
+  # ─── Frontend Service (React + Vite + Nginx) ────────────────────────────────
+  frontend:
+    build:
+      context: ./HemoScan Web
+    container_name: hemoscan-frontend
+    restart: always
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+
+volumes:
+  hemoscan-db-data:

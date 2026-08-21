@@ -1,0 +1,9 @@
+# Enforce consistent LF (Linux-style) line endings for code and scripts
+# This prevents syntax errors inside Docker Linux containers on Windows hosts
+* text eol=lf
+*.php text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.bat text eol=crlf
+Dockerfile text eol=lf
+docker-compose.yml text eol=lf

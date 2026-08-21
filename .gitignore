@@ -1,0 +1,38 @@
+# Node dependencies & production builds
+HemoScan Web/node_modules/
+HemoScan Web/dist/
+HemoScan Web/.env
+HemoScan Web/.env.local
+HemoScan Web/.env.production
+
+# Backend configurations with secrets
+Backend/config.php
+
+# Dynamically uploaded medical images (HIPAA / PII compliance)
+Backend/uploads/scans/*
+Backend/uploads/profiles/*
+!Backend/uploads/scans/.gitkeep
+!Backend/uploads/profiles/.gitkeep
+
+# Machine Learning model files (large binary models)
+Backend/models/*.tflite
+HemoScan Web/public/models/*.tflite
+
+# Python compiler cache & virtual environments
+**/__pycache__/
+**/*.py[cod]
+**/venv/
+**/.venv/
+
+# Environment logs and debug files
+*.log
+Backend/otp_log.txt
+Backend/error_log
+
+# OS and IDE configuration files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.ntvs*

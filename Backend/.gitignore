@@ -1,0 +1,36 @@
+# Sensitive configuration (copy config.example.php and fill in your values)
+config.php
+
+# User uploaded files (runtime data - not versioned)
+uploads/scans/*
+uploads/profiles/*
+!uploads/scans/.gitkeep
+!uploads/profiles/.gitkeep
+
+# Logs
+*.log
+otp_log.txt
+error_log
+
+# PHP Composer
+vendor/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+*.swp
