@@ -37,6 +37,6 @@ CREATE TABLE IF NOT EXISTS `fcm_tokens` (
 
 -- Performance index on scans table for faster doctor+date queries
 ALTER TABLE `scans`
-  ADD INDEX IF NOT EXISTS `idx_doctor_date` (`doctor_email`, `created_at`);
+  ADD INDEX `idx_doctor_date` (`doctor_email`, `created_at`);
 
 SELECT 'Migration complete: support_tickets + fcm_tokens tables created.' AS status;
