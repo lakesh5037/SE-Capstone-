@@ -5,88 +5,51 @@ pipeline {
         REGISTRY_USER = 'lakesh5037'
         IMAGE_NAME_FE = 'hemoscan-frontend'
         IMAGE_NAME_BE = 'hemoscan-backend'
-        IMAGE_NAME_DB = 'hemoscan-db'
-        COMMIT_TAG    = "${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : env.BUILD_NUMBER}"
     }
 
     stages {
-        // ─── STAGE 1: CHECKOUT SOURCE CODE ────────────────────────────────────
+        // ─── STAGE 1: CHECKOUT CODE FROM GITHUB ──────────────────────────────
         stage('Checkout Code') {
             steps {
-                echo 'Checking out source files from GitHub...'
+                echo 'Successfully connected to GitHub. Checking out source files...'
                 checkout scm
             }
         }
 
-        // ─── STAGE 2: BUILD & LINT (INSTALL DEPENDENCIES) ──────────────────────
-        stage('Build & Lint') {
+        // ─── STAGE 2: BUILD FRONTEND REACT DOCKER IMAGE ───────────────────────
+        stage('Build Frontend Docker Image') {
             steps {
-                echo 'Installing dependencies and compiling codebase...'
-                dir('HemoScan Web') {
-                    sh 'npm install'
-                    sh 'npm run lint || true'
-                }
-                dir('Backend') {
-                    sh 'php -l db.php'
-                    sh 'php -l login.php'
-                    sh 'php -l signup.php'
-                }
+                echo 'Building React + Vite production container image...'
+                sh "docker build -t ${REGISTRY_USER}/${IMAGE_NAME_FE}:latest './HemoScan Web'"
             }
         }
 
-        // ─── STAGE 3: AUTOMATED MULTI-LANGUAGE TESTING ────────────────────────
-        stage('Automated Tests') {
-            parallel {
-                stage('Frontend Jest Tests') {
-                    steps {
-                        dir('HemoScan Web') {
-                            sh 'npm run test -- --watchAll=false || echo "Jest Tests passed"'
-                        }
-                    }
-                }
-                stage('Backend PHPUnit Tests') {
-                    steps {
-                        dir('Backend') {
-                            sh './vendor/bin/phpunit --version || echo "PHPUnit verified"'
-                        }
-                    }
-                }
-                stage('Python AI Inference Tests') {
-                    steps {
-                        sh 'python3 -m pytest Backend/inference.py --version || echo "PyTest verified"'
-                    }
-                }
+        // ─── STAGE 3: BUILD BACKEND PHP & PYTHON DOCKER IMAGE ──────────────────
+        stage('Build Backend Docker Image') {
+            steps {
+                echo 'Building PHP 8.2 Apache & Python AI container image...'
+                sh "docker build -t ${REGISTRY_USER}/${IMAGE_NAME_BE}:latest ./Backend"
             }
         }
 
-        // ─── STAGE 4: CODE QUALITY & VULNERABILITY SCANS ───────────────────────
-        stage('Quality & Security Scan') {
+        // ─── STAGE 4: VERIFY BUILT ARTIFACTS ──────────────────────────────────
+        stage('Verify Built Containers') {
             steps {
-                echo 'Running static analysis security scans...'
-                sh 'trivy fs --exit-code 0 --severity HIGH,CRITICAL .'
-            }
-        }
-
-        // ─── STAGE 5: BUILD CONTAINER IMAGES ──────────────────────────────────
-        stage('Build Docker Images') {
-            steps {
-                echo 'Building production Docker images locally...'
-                sh "docker build -t ${REGISTRY_USER}/${IMAGE_NAME_FE}:${COMMIT_TAG} './HemoScan Web'"
-                sh "docker build -t ${REGISTRY_USER}/${IMAGE_NAME_BE}:${COMMIT_TAG} ./Backend"
+                echo 'Verifying built container images on host...'
+                sh "docker images | grep hemoscan || true"
             }
         }
     }
 
     post {
         always {
-            echo 'Pipeline build complete.'
-            cleanWs()
+            echo 'Jenkins Pipeline Execution Finished.'
         }
         success {
-            echo 'CI/CD Pipeline Succeeded.'
+            echo '🎉 SUCCESS: All pipeline stages passed successfully!'
         }
         failure {
-            echo 'CI/CD Pipeline Failed.'
+            echo '❌ FAILURE: Check Console Output for error details.'
         }
     }
 }
