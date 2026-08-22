@@ -619,7 +619,7 @@ export default function App() {
           </div>
           ${(scan.image_path || scan.imageUri || scan.imagePath) ? `
             <div class="image-preview">
-              <img src="${(scan.image_path || scan.imageUri || scan.imagePath).startsWith('http') ? (scan.image_path || scan.imageUri || scan.imagePath) : ('http://localhost/brainscan_api/' + (scan.image_path || scan.imageUri || scan.imagePath))}" alt="CT Scan" />
+              <img src="${(scan.image_path || scan.imageUri || scan.imagePath).startsWith('http') ? (scan.image_path || scan.imageUri || scan.imagePath) : (getApiBaseUrl() + (scan.image_path || scan.imageUri || scan.imagePath))}" alt="CT Scan" />
             </div>
           ` : ''}
           <div class="disclaimer">

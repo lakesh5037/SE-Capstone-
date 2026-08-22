@@ -71,7 +71,7 @@ export interface NotificationsResponse extends BaseResponse {
 // Default: localhost (for web browser on same PC as XAMPP)
 // Change via Settings if you need a remote/network URL
 export const getApiBaseUrl = (): string => {
-  return localStorage.getItem('hemoscan_api_url') || 'http://localhost/brainscan_api/';
+  return localStorage.getItem('hemoscan_api_url') || (import.meta.env.VITE_API_URL as string) || 'http://localhost:8081/';
 };
 
 export const setApiBaseUrl = (url: string) => {
