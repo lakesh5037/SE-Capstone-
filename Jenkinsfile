@@ -11,8 +11,8 @@ pipeline {
         // ─── STAGE 1: CHECKOUT CODE FROM GITHUB ──────────────────────────────
         stage('Checkout Code') {
             steps {
-                echo 'Successfully connected to GitHub. Checking out source files...'
-                checkout scm
+                echo 'Cloning repository from GitHub...'
+                git branch: 'develop', url: 'https://github.com/lakesh5037/SE-Capstone-.git'
             }
         }
 
@@ -32,11 +32,24 @@ pipeline {
             }
         }
 
-        // ─── STAGE 4: VERIFY BUILT ARTIFACTS ──────────────────────────────────
-        stage('Verify Built Containers') {
+        // ─── STAGE 4: DEPLOY & RUN APPLICATION CONTAINERS ─────────────────────
+        stage('Deploy & Run Application Containers') {
             steps {
-                echo 'Verifying built container images on host...'
-                sh "docker images | grep hemoscan || true"
+                echo 'Deploying HemoScan application containers using Docker...'
+                sh '''
+                    docker rm -f hemoscan-db hemoscan-backend hemoscan-frontend || true
+                    docker run -d --name hemoscan-db -p 3307:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_DATABASE=brain_scan_db mysql:8.0
+                    docker run -d --name hemoscan-backend -p 8081:80 -e DB_HOST=hemoscan-db -e DB_USER=root -e DB_NAME=brain_scan_db lakesh5037/hemoscan-backend:latest
+                    docker run -d --name hemoscan-frontend -p 3001:80 lakesh5037/hemoscan-frontend:latest
+                '''
+            }
+        }
+
+        // ─── STAGE 5: VERIFY ACTIVE CONTAINERS ───────────────────────────────
+        stage('Verify Active Containers') {
+            steps {
+                echo 'Verifying active Docker containers on host...'
+                sh 'docker ps'
             }
         }
     }
@@ -46,7 +59,7 @@ pipeline {
             echo 'Jenkins Pipeline Execution Finished.'
         }
         success {
-            echo '🎉 SUCCESS: All pipeline stages passed successfully!'
+            echo '🎉 SUCCESS: HemoScan stack built, deployed, and running in Docker!'
         }
         failure {
             echo '❌ FAILURE: Check Console Output for error details.'
