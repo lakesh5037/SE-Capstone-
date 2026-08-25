@@ -603,7 +603,7 @@ export default function App() {
         <div class="report-card">
           <div class="header">
             <div>
-              <div class="title">HemoScan AI</div>
+              <div class="title">HemoScan</div>
               <div class="subtitle">Diagnostic Neuroimaging Report</div>
             </div>
             <div style="text-align: right; font-size: 12px; color: #a5b4fc;">
