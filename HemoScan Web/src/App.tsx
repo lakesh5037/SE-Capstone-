@@ -834,7 +834,7 @@ export default function App() {
                   transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
                   style={{
                     position: 'absolute', inset: -24,
-                    borderRadius: '50%', background: 'rgba(129,140,248,0.2)',
+                    borderRadius: '50%', background: 'rgba(34,197,94,0.2)',
                   }}
                 />
                 <motion.div
@@ -842,7 +842,7 @@ export default function App() {
                   transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut', delay: 0.3 }}
                   style={{
                     position: 'absolute', inset: -12,
-                    borderRadius: '50%', background: 'rgba(129,140,248,0.25)',
+                    borderRadius: '50%', background: 'rgba(34,197,94,0.25)',
                   }}
                 />
                 <motion.div
@@ -868,7 +868,7 @@ export default function App() {
                   transition={{ delay: 0.25, duration: 0.5 }}
                   style={{ fontSize: '40px', fontWeight: 900, color: '#fff', letterSpacing: '-1px', lineHeight: 1.1 }}
                 >
-                  HemoScan<span style={{ color: '#818CF8' }}> AI</span>
+                  HemoScan<span style={{ color: '#22C55E' }}> AI</span>
                 </motion.h1>
                 <motion.p
                   initial={{ opacity: 0 }} animate={{ opacity: 0.7 }}
@@ -909,14 +909,14 @@ export default function App() {
               }}
             >
               <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                <div className="animate-spin" style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#818CF8', borderRadius: '50%' }} />
+                <div className="animate-spin" style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#22C55E', borderRadius: '50%' }} />
                 {mlStatus}
               </div>
               <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
                 <motion.div
                   animate={{ x: ['-100%', '200%'] }}
                   transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
-                  style={{ width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, #818CF8, #34D399, transparent)', borderRadius: '2px' }}
+                  style={{ width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, #22C55E, #14B8A6, transparent)', borderRadius: '2px' }}
                 />
               </div>
             </motion.div>
@@ -971,7 +971,7 @@ export default function App() {
 
                 <div style={{ textAlign: 'right' }}>
                   <button type="button" onClick={() => setCurrentRoute('forgot-password')}
-                    style={{ background: 'none', border: 'none', color: '#818CF8', fontSize: '13px', cursor: 'pointer', fontWeight: 500 }}>
+                    style={{ background: 'none', border: 'none', color: '#22C55E', fontSize: '13px', cursor: 'pointer', fontWeight: 500 }}>
                     Forgot password?
                   </button>
                 </div>
@@ -991,7 +991,7 @@ export default function App() {
               <div style={{ textAlign: 'center', marginTop: '24px', fontSize: '14px', color: 'rgba(255,255,255,0.45)' }}>
                 New to HemoScan?{' '}
                 <button onClick={() => setCurrentRoute('signup')}
-                  style={{ background: 'none', border: 'none', color: '#818CF8', cursor: 'pointer', fontWeight: 600, fontSize: '14px' }}>
+                  style={{ background: 'none', border: 'none', color: '#22C55E', cursor: 'pointer', fontWeight: 600, fontSize: '14px' }}>
                   Create account
                 </button>
               </div>
@@ -1004,7 +1004,7 @@ export default function App() {
                   { icon: BadgeCheck, label: 'Validated hemorrhage detection AI' },
                 ].map(({ icon: Icon, label }) => (
                   <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Icon size={14} color="rgba(129,140,248,0.8)" />
+                    <Icon size={14} color="rgba(34,197,94,0.8)" />
                     <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{label}</span>
                   </div>
                 ))}
@@ -1053,9 +1053,9 @@ export default function App() {
                     <button key={g} type="button" onClick={() => setSignupGender(g)}
                       style={{
                         flex: 1, padding: '11px 8px', borderRadius: '8px', border: '1.5px solid',
-                        borderColor: signupGender === g ? 'rgba(129,140,248,0.6)' : 'rgba(255,255,255,0.12)',
-                        background: signupGender === g ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.06)',
-                        color: signupGender === g ? '#818CF8' : 'rgba(255,255,255,0.45)',
+                        borderColor: signupGender === g ? 'rgba(34,197,94,0.6)' : 'rgba(255,255,255,0.12)',
+                        background: signupGender === g ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)',
+                        color: signupGender === g ? '#22C55E' : 'rgba(255,255,255,0.45)',
                         fontSize: '13px', fontWeight: 600, cursor: 'pointer',
                         transition: 'all 0.15s'
                       }}>
@@ -1128,7 +1128,7 @@ export default function App() {
                 </div>
               ) : (
                 <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  <div style={{ background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(129,140,248,0.25)', borderRadius: '10px', padding: '12px 16px', fontSize: '13px', color: 'rgba(255,255,255,0.6)', textAlign: 'center' }}>
+                  <div style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: '10px', padding: '12px 16px', fontSize: '13px', color: 'rgba(255,255,255,0.6)', textAlign: 'center' }}>
                     Code sent to <strong style={{ color: '#fff' }}>{resetEmail}</strong>
                   </div>
                   <input type="text" placeholder="6-digit verification code" value={otpCode} onChange={e => setOtpCode(e.target.value)} className="auth-input" style={{ textAlign: 'center', letterSpacing: '6px', fontSize: '20px', fontWeight: 700 }} maxLength={6} id="reset-otp" />
@@ -1159,20 +1159,20 @@ export default function App() {
                 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   background: 'linear-gradient(145deg, #0F172A 0%, #1E1B4B 100%)',
-                  border: '1px solid rgba(129,140,248,0.2)',
+                  border: '1px solid rgba(34,197,94,0.2)',
                   borderRadius: '20px', padding: '36px', width: '100%', maxWidth: '400px',
                   boxShadow: '0 32px 64px rgba(0,0,0,0.5)',
                   display: 'flex', flexDirection: 'column', gap: '24px'
                 }}
               >
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ width: 56, height: 56, borderRadius: '16px', background: 'rgba(129,140,248,0.15)', border: '1px solid rgba(129,140,248,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                    <Mail size={24} color="#818CF8" />
+                  <div style={{ width: 56, height: 56, borderRadius: '16px', background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                    <Mail size={24} color="#22C55E" />
                   </div>
                   <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff' }}>Email Verification</h3>
                   <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '13px', marginTop: '6px' }}>
                     Enter the 6-digit code sent to<br />
-                    <strong style={{ color: '#818CF8' }}>{signupEmail}</strong>
+                    <strong style={{ color: '#22C55E' }}>{signupEmail}</strong>
                   </p>
                 </div>
                 <input
@@ -1436,7 +1436,7 @@ export default function App() {
                     {/* ── Stat Cards ── */}
                     <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '18px' }}>
                       {[
-                        { label: 'Total Analyses', value: stats.total, icon: Database, colorClass: 'stat-card-blue', filter: 'total', gradient: 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(67,56,202,0.04) 100%)', accent: 'var(--brand-600)', trend: '+12%' },
+                        { label: 'Total Analyses', value: stats.total, icon: Database, colorClass: 'stat-card-blue', filter: 'total', gradient: 'linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(22,163,74,0.04) 100%)', accent: 'var(--brand-600)', trend: '+12%' },
                         { label: 'Normal Results', value: stats.normal, icon: CheckCircle, colorClass: 'stat-card-green', filter: 'normal', gradient: 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(5,150,105,0.04) 100%)', accent: 'var(--accent-600)', trend: 'Safe' },
                         { label: 'Hemorrhages Detected', value: stats.abnormal, icon: AlertTriangle, colorClass: 'stat-card-red', filter: 'abnormal', gradient: 'linear-gradient(135deg, rgba(239,68,68,0.08) 0%, rgba(220,38,38,0.04) 100%)', accent: 'var(--danger)', trend: 'Critical' },
                       ].map(({ label, value, icon: Icon, colorClass, filter, gradient, accent, trend }, i) => (
@@ -1786,12 +1786,12 @@ export default function App() {
                         {/* Image Frame */}
                         <div style={{
                           flex: 1, minHeight: '300px', background: '#0A0A14',
-                          borderRadius: '12px', border: '1px solid rgba(99,102,241,0.15)',
+                          borderRadius: '12px', border: '1px solid rgba(34,197,94,0.15)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           position: 'relative', overflow: 'hidden'
                         }}>
                           {/* Grid overlay */}
-                          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px)', backgroundSize: '30px 30px', pointerEvents: 'none' }} />
+                          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(34,197,94,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,0.04) 1px, transparent 1px)', backgroundSize: '30px 30px', pointerEvents: 'none' }} />
 
                           {/* Corner brackets */}
                           {['top-left', 'top-right', 'bottom-left', 'bottom-right'].map(corner => {
@@ -1800,10 +1800,10 @@ export default function App() {
                               <div key={corner} style={{
                                 position: 'absolute', width: 20, height: 20,
                                 [v]: 12, [h]: 12,
-                                borderTop: v === 'top' ? '2px solid rgba(99,102,241,0.5)' : 'none',
-                                borderBottom: v === 'bottom' ? '2px solid rgba(99,102,241,0.5)' : 'none',
-                                borderLeft: h === 'left' ? '2px solid rgba(99,102,241,0.5)' : 'none',
-                                borderRight: h === 'right' ? '2px solid rgba(99,102,241,0.5)' : 'none',
+                                borderTop: v === 'top' ? '2px solid rgba(34,197,94,0.5)' : 'none',
+                                borderBottom: v === 'bottom' ? '2px solid rgba(34,197,94,0.5)' : 'none',
+                                borderLeft: h === 'left' ? '2px solid rgba(34,197,94,0.5)' : 'none',
+                                borderRight: h === 'right' ? '2px solid rgba(34,197,94,0.5)' : 'none',
                                 pointerEvents: 'none'
                               }} />
                             );
@@ -1813,7 +1813,7 @@ export default function App() {
                             <div style={{ position: 'absolute', inset: 0, zIndex: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px', background: 'rgba(10,10,20,0.7)' }}>
                               <div className="scanner-line" />
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                                <Brain size={28} color="#818CF8" className="animate-heartbeat" />
+                                <Brain size={28} color="#22C55E" className="animate-heartbeat" />
                                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.85)', textAlign: 'center', maxWidth: '240px' }}>
                                   {scanProgress}
                                 </span>
@@ -2572,7 +2572,7 @@ export default function App() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                           {/* Hero */}
                           <div className="card" style={{ padding: '36px 28px', textAlign: 'center', background: 'linear-gradient(145deg, var(--brand-50) 0%, var(--surface-0) 60%, var(--brand-50) 100%)' }}>
-                            <div style={{ width: 88, height: 88, borderRadius: '28px', background: 'linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '0 10px 32px rgba(99,102,241,0.35)' }}>
+                            <div style={{ width: 88, height: 88, borderRadius: '28px', background: 'linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '0 10px 32px rgba(34,197,94,0.35)' }}>
                               <Brain size={44} color="#fff" />
                             </div>
                             <h2 style={{ fontSize: '26px', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.5px', marginBottom: '8px' }}>HemoScan AI</h2>
@@ -2644,7 +2644,7 @@ export default function App() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                           {/* App identity card */}
                           <div className="card" style={{ padding: '32px', textAlign: 'center', background: 'linear-gradient(145deg, var(--surface-0) 0%, var(--brand-50) 100%)' }}>
-                            <div style={{ width: 80, height: 80, borderRadius: '24px', background: 'linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 8px 24px rgba(99,102,241,0.35)' }}>
+                            <div style={{ width: 80, height: 80, borderRadius: '24px', background: 'linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 8px 24px rgba(34,197,94,0.35)' }}>
                               <Brain size={40} color="#fff" />
                             </div>
                             <h2 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>HemoScan AI</h2>
@@ -2980,3 +2980,5 @@ export default function App() {
     </div>
   );
 }
+
+
