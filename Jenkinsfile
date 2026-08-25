@@ -1,14 +1,9 @@
 pipeline {
     agent any
 
-    environment {
-        REGISTRY_USER = 'lakesh5037'
-        IMAGE_NAME_FE = 'hemoscan-frontend'
-        IMAGE_NAME_BE = 'hemoscan-backend'
-    }
-
     stages {
-        // ─── STAGE 1: CHECKOUT CODE FROM GITHUB ──────────────────────────────
+
+        // ── STAGE 1: Checkout Code from GitHub ─────────────────────────────────
         stage('Checkout Code') {
             steps {
                 echo 'Cloning repository from GitHub...'
@@ -16,53 +11,96 @@ pipeline {
             }
         }
 
-        // ─── STAGE 2: BUILD FRONTEND REACT DOCKER IMAGE ───────────────────────
-        stage('Build Frontend Docker Image') {
+        // ── STAGE 2: Build Frontend Docker Image ────────────────────────────────
+        stage('Build Frontend Image') {
             steps {
-                echo 'Building React + Vite production container image...'
-                sh "docker build -t ${REGISTRY_USER}/${IMAGE_NAME_FE}:latest './HemoScan Web'"
+                echo 'Building React + Vite + Nginx frontend image...'
+                sh "docker build -t lakesh5037/hemoscan-frontend:latest './HemoScan Web'"
             }
         }
 
-        // ─── STAGE 3: BUILD BACKEND PHP & PYTHON DOCKER IMAGE ──────────────────
-        stage('Build Backend Docker Image') {
+        // ── STAGE 3: Build Backend Docker Image ─────────────────────────────────
+        stage('Build Backend Image') {
             steps {
-                echo 'Building PHP 8.2 Apache & Python AI container image...'
-                sh "docker build -t ${REGISTRY_USER}/${IMAGE_NAME_BE}:latest ./Backend"
+                echo 'Building PHP 8.2 Apache + Python TFLite backend image...'
+                sh 'docker build -t lakesh5037/hemoscan-backend:latest ./Backend'
             }
         }
 
-        // ─── STAGE 4: DEPLOY & RUN APPLICATION CONTAINERS ─────────────────────
-        stage('Deploy & Run Application Containers') {
+        // ── STAGE 4: Deploy All Containers ──────────────────────────────────────
+        stage('Deploy Application') {
             steps {
-                echo 'Deploying HemoScan application containers using Docker...'
+                echo 'Stopping old containers, creating network, deploying fresh containers...'
                 sh '''
-                    docker rm -f hemoscan-db hemoscan-backend hemoscan-frontend || true
-                    docker run -d --name hemoscan-db -p 3307:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_DATABASE=brain_scan_db mysql:8.0
-                    docker run -d --name hemoscan-backend -p 8081:80 -e DB_HOST=hemoscan-db -e DB_USER=root -e DB_NAME=brain_scan_db lakesh5037/hemoscan-backend:latest
-                    docker run -d --name hemoscan-frontend -p 3001:80 lakesh5037/hemoscan-frontend:latest
+                    # ─── 1. Create isolated Docker network for HemoScan (safe to re-run) ───
+                    docker network create hemoscan-net || true
+
+                    # ─── 2. Stop & remove old HemoScan containers cleanly ────────────────
+                    docker stop hemoscan-frontend hemoscan-backend hemoscan-db || true
+                    docker rm   hemoscan-frontend hemoscan-backend hemoscan-db || true
+
+                    # ─── 3. Start Database on hemoscan-net ───────────────────────────────
+                    #        Mount SQL init scripts so tables are created on first boot
+                    docker run -d \
+                        --name hemoscan-db \
+                        --network hemoscan-net \
+                        -p 3307:3306 \
+                        -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
+                        -e MYSQL_DATABASE=brain_scan_db \
+                        -v "$PWD/Backend/setup_db.sql:/docker-entrypoint-initdb.d/1_setup_db.sql" \
+                        -v "$PWD/Backend/add_notifications_table.sql:/docker-entrypoint-initdb.d/2_add_notifications_table.sql" \
+                        -v "$PWD/Backend/create_tickets_table.sql:/docker-entrypoint-initdb.d/3_create_tickets_table.sql" \
+                        mysql:8.0
+
+                    # ─── 4. Wait for MySQL to finish initializing tables (10 seconds) ───
+                    echo "Waiting 10s for MySQL to initialize..."
+                    sleep 10
+
+                    # ─── 5. Start Backend on hemoscan-net ────────────────────────────────
+                    #        DB_HOST=hemoscan-db works because both are on hemoscan-net
+                    docker run -d \
+                        --name hemoscan-backend \
+                        --network hemoscan-net \
+                        -p 8081:80 \
+                        -e DB_HOST=hemoscan-db \
+                        -e DB_USER=root \
+                        -e DB_PASSWORD="" \
+                        -e DB_NAME=brain_scan_db \
+                        -v "$PWD/Backend/uploads:/var/www/html/uploads" \
+                        lakesh5037/hemoscan-backend:latest
+
+                    # ─── 6. Start Frontend on hemoscan-net ───────────────────────────────
+                    docker run -d \
+                        --name hemoscan-frontend \
+                        --network hemoscan-net \
+                        -p 3001:80 \
+                        lakesh5037/hemoscan-frontend:latest
                 '''
             }
         }
 
-        // ─── STAGE 5: VERIFY ACTIVE CONTAINERS ───────────────────────────────
-        stage('Verify Active Containers') {
+        // ── STAGE 5: Verify Running Containers ──────────────────────────────────
+        stage('Verify Containers') {
             steps {
-                echo 'Verifying active Docker containers on host...'
-                sh 'docker ps'
+                echo 'Checking all HemoScan containers are running...'
+                sh 'docker ps --filter "name=hemoscan"'
             }
         }
+
     }
 
     post {
-        always {
-            echo 'Jenkins Pipeline Execution Finished.'
-        }
         success {
-            echo '🎉 SUCCESS: HemoScan stack built, deployed, and running in Docker!'
+            echo '''
+            ✅ HemoScan AI is running!
+               Frontend  → http://localhost:3001
+               Backend   → http://localhost:8081
+               Database  → localhost:3307 (brain_scan_db)
+               phpMyAdmin→ http://localhost:8082 (if running)
+            '''
         }
         failure {
-            echo '❌ FAILURE: Check Console Output for error details.'
+            echo '❌ Build FAILED. Check the Console Output above for the exact error.'
         }
     }
 }
