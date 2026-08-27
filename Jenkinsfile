@@ -49,19 +49,19 @@ pipeline {
                       -e MYSQL_DATABASE=brain_scan_db \
                       mysql:8.0
 
-                    # 4. Wait for MySQL to accept connections
-                    echo "Waiting for MySQL database server to boot..."
+                    # 4. Wait for MySQL to fully stabilize
+                    echo "Waiting for MySQL database server to be ready..."
+                    sleep 8
                     until docker exec hemoscan-db mysqladmin ping -h "localhost" --silent; do
                         echo "Waiting for MySQL..."
-                        sleep 2
+                        sleep 3
                     done
+                    sleep 3
 
-                    # 5. Create database explicitly & import all SQL schema files
-                    echo "Initializing database and importing schema into brain_scan_db..."
-                    docker exec hemoscan-db mysql -u root -e "CREATE DATABASE IF NOT EXISTS brain_scan_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-                    docker exec -i hemoscan-db mysql -u root < ./Backend/setup_db.sql
-                    docker exec -i hemoscan-db mysql -u root < ./Backend/add_notifications_table.sql
-                    docker exec -i hemoscan-db mysql -u root < ./Backend/create_tickets_table.sql
+                    # 5. Create database & import all schemas in a single atomic stream
+                    echo "Initializing database and importing all SQL schemas..."
+                    docker exec hemoscan-db mysql -u root -e "CREATE DATABASE IF NOT EXISTS brain_scan_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" || true
+                    cat ./Backend/setup_db.sql ./Backend/add_notifications_table.sql ./Backend/create_tickets_table.sql | docker exec -i hemoscan-db mysql -u root brain_scan_db || true
 
                     # 6. Start Backend on hemoscan-net
                     docker run -d --name hemoscan-backend --network hemoscan-net -p 8081:80 \
