@@ -56,11 +56,12 @@ pipeline {
                         sleep 2
                     done
 
-                    # 5. Direct SQL schema import (ensures all tables exist in phpMyAdmin)
-                    echo "Importing SQL schema into brain_scan_db..."
-                    docker exec -i hemoscan-db mysql -u root brain_scan_db < ./Backend/setup_db.sql || true
-                    docker exec -i hemoscan-db mysql -u root brain_scan_db < ./Backend/add_notifications_table.sql || true
-                    docker exec -i hemoscan-db mysql -u root brain_scan_db < ./Backend/create_tickets_table.sql || true
+                    # 5. Create database explicitly & import all SQL schema files
+                    echo "Initializing database and importing schema into brain_scan_db..."
+                    docker exec hemoscan-db mysql -u root -e "CREATE DATABASE IF NOT EXISTS brain_scan_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+                    docker exec -i hemoscan-db mysql -u root < ./Backend/setup_db.sql
+                    docker exec -i hemoscan-db mysql -u root < ./Backend/add_notifications_table.sql
+                    docker exec -i hemoscan-db mysql -u root < ./Backend/create_tickets_table.sql
 
                     # 6. Start Backend on hemoscan-net
                     docker run -d --name hemoscan-backend --network hemoscan-net -p 8081:80 \
