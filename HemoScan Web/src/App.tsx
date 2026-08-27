@@ -13,6 +13,7 @@ import { initializeModels, processBrainScan } from './services/classifier';
 import type { ScanResult } from './services/classifier';
 import { useFCM } from './hooks/useFCM';
 import i18n, { getLanguageCode } from './i18n';
+import logoImg from './assets/logo.png';
 
 // ─── Route type ───────────────────────────────────────────────────────────────
 type Route = 'splash' | 'login' | 'signup' | 'forgot-password' | 'dashboard' | 'new-scan' | 'history' | 'settings';
@@ -857,7 +858,7 @@ export default function App() {
                     boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
                   }}
                 >
-                  <img src="/logo.png" alt="HemoScan" style={{ width: 64, height: 64, objectFit: 'contain' }} />
+                  <img src={logoImg} alt="HemoScan" style={{ width: 64, height: 64, objectFit: 'contain' }} />
                 </motion.div>
               </div>
 
@@ -937,7 +938,7 @@ export default function App() {
               {/* Header */}
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 60, height: 60, borderRadius: '16px', background: 'rgba(255,255,255,0.1)', marginBottom: '16px', border: '1px solid rgba(255,255,255,0.15)' }}>
-                  <img src="/logo.png" alt="HemoScan" style={{ width: 38, height: 38, objectFit: 'contain' }} />
+                  <img src={logoImg} alt="HemoScan" style={{ width: 38, height: 38, objectFit: 'contain' }} />
                 </div>
                 <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>Sign in to HemoScan</h1>
                 <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', marginTop: '6px' }}>
@@ -1209,7 +1210,7 @@ export default function App() {
                 onClick={() => setCurrentRoute('dashboard')}
                 style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: '10px' }}
               >
-                <img src="/logo.png" alt="HemoScan" style={{ width: 30, height: 30, objectFit: 'contain' }} />
+                <img src={logoImg} alt="HemoScan" style={{ width: 30, height: 30, objectFit: 'contain' }} />
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
                   <span style={{ fontSize: '17px', fontWeight: 800, color: 'var(--brand-600)', letterSpacing: '-0.3px' }}>HemoScan</span>
                   <span style={{ fontSize: '11px', background: 'var(--brand-50)', color: 'var(--brand-600)', padding: '2px 8px', borderRadius: '100px', fontWeight: 700, border: '1px solid var(--brand-200)' }}>AI Portal</span>

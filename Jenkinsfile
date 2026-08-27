@@ -1,66 +1,109 @@
 pipeline {
     agent any
 
-    stages {
+    environment {
+        REGISTRY_USER = 'lakesh5037'
+        IMAGE_NAME_FE = 'hemoscan-frontend'
+        IMAGE_NAME_BE = 'hemoscan-backend'
+    }
 
-        // ── STAGE 1: Checkout Latest Code from GitHub ───────────────────────────
+    stages {
+        // ─── STAGE 1: CHECKOUT CODE FROM GITHUB ──────────────────────────────
         stage('Checkout Code') {
             steps {
-                echo 'Cloning latest code from GitHub develop branch...'
+                echo 'Cloning repository from GitHub...'
                 git branch: 'develop', url: 'https://github.com/lakesh5037/SE-Capstone-.git'
             }
         }
 
-        // ── STAGE 2: Stop Old Containers ────────────────────────────────────────
-        stage('Stop Old Containers') {
+        // ─── STAGE 2: BUILD FRONTEND REACT DOCKER IMAGE ───────────────────────
+        stage('Build Frontend Docker Image') {
             steps {
-                echo 'Stopping and removing old containers...'
-                sh 'docker-compose down || true'
-                sh 'docker rm -f hemoscan-db hemoscan-backend hemoscan-frontend hemoscan-phpmyadmin || true'
+                echo 'Building React + Vite production container image without cache...'
+                sh "docker build --no-cache -t ${REGISTRY_USER}/${IMAGE_NAME_FE}:latest './HemoScan Web'"
             }
         }
 
-        // ── STAGE 3: Build & Start All Containers via docker-compose ────────────
-        stage('Build & Deploy') {
+        // ─── STAGE 3: BUILD BACKEND PHP & PYTHON DOCKER IMAGE ──────────────────
+        stage('Build Backend Docker Image') {
             steps {
-                echo 'Building fresh images and starting all containers...'
-                sh 'docker-compose up --build -d'
+                echo 'Building PHP 8.2 Apache & Python AI container image...'
+                sh "docker build -t ${REGISTRY_USER}/${IMAGE_NAME_BE}:latest ./Backend"
             }
         }
 
-        // ── STAGE 4: Start phpMyAdmin for DB viewing ─────────────────────────────
-        stage('Start phpMyAdmin') {
+        // ─── STAGE 4: DEPLOY CONTAINERS & EXECUTE SQL MIGRATIONS ──────────────
+        stage('Deploy & Run Application Containers') {
             steps {
-                echo 'Starting phpMyAdmin for database access...'
-                sh 'docker run -d --name hemoscan-phpmyadmin -p 8082:80 -e PMA_HOST=db --network capstoneproject_default phpmyadmin:latest || true'
+                echo 'Deploying HemoScan containers and importing SQL schema...'
+                sh '''
+                    # 1. Create dedicated bridge network
+                    docker network create hemoscan-net || true
+
+                    # 2. Clean up any existing containers
+                    docker rm -f hemoscan-db hemoscan-backend hemoscan-frontend hemoscan-phpmyadmin || true
+
+                    # 3. Start Database on hemoscan-net
+                    docker run -d --name hemoscan-db --network hemoscan-net -p 3307:3306 \
+                      -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
+                      -e MYSQL_DATABASE=brain_scan_db \
+                      mysql:8.0
+
+                    # 4. Wait for MySQL to accept connections
+                    echo "Waiting for MySQL database server to boot..."
+                    until docker exec hemoscan-db mysqladmin ping -h "localhost" --silent; do
+                        echo "Waiting for MySQL..."
+                        sleep 2
+                    done
+
+                    # 5. Direct SQL schema import (ensures all tables exist in phpMyAdmin)
+                    echo "Importing SQL schema into brain_scan_db..."
+                    docker exec -i hemoscan-db mysql -u root brain_scan_db < ./Backend/setup_db.sql || true
+                    docker exec -i hemoscan-db mysql -u root brain_scan_db < ./Backend/add_notifications_table.sql || true
+                    docker exec -i hemoscan-db mysql -u root brain_scan_db < ./Backend/create_tickets_table.sql || true
+
+                    # 6. Start Backend on hemoscan-net
+                    docker run -d --name hemoscan-backend --network hemoscan-net -p 8081:80 \
+                      -e DB_HOST=hemoscan-db -e DB_USER=root -e DB_NAME=brain_scan_db \
+                      lakesh5037/hemoscan-backend:latest
+
+                    # 7. Start Frontend on hemoscan-net
+                    docker run -d --name hemoscan-frontend --network hemoscan-net -p 3001:80 \
+                      lakesh5037/hemoscan-frontend:latest
+
+                    # 8. Start phpMyAdmin on hemoscan-net connected to hemoscan-db
+                    docker run -d --name hemoscan-phpmyadmin --network hemoscan-net -p 8082:80 \
+                      -e PMA_HOST=hemoscan-db \
+                      phpmyadmin:latest
+                '''
             }
         }
 
-        // ── STAGE 5: Verify Running Containers ───────────────────────────────────
-        stage('Verify Containers') {
+        // ─── STAGE 5: VERIFY ACTIVE CONTAINERS ───────────────────────────────
+        stage('Verify Active Containers') {
             steps {
-                echo 'All running containers:'
-                sh 'docker ps'
+                echo 'Verifying active Docker containers on host...'
+                sh 'docker ps --filter "name=hemoscan"'
             }
         }
-
     }
 
     post {
+        always {
+            echo 'Jenkins Pipeline Execution Finished.'
+        }
         success {
             echo '''
-            ========================================
-            SUCCESS! HemoScan AI is LIVE!
-            ----------------------------------------
-            Frontend   → http://localhost:3001
-            Backend    → http://localhost:8081
-            Database   → http://localhost:8082
-            Jenkins    → http://localhost:9090
-            ========================================
+            =======================================================
+            🎉 SUCCESS: HemoScan stack built, DB imported, and live!
+               Frontend   → http://localhost:3001
+               Backend    → http://localhost:8081/index.php
+               Database   → http://localhost:8082 (phpMyAdmin)
+            =======================================================
             '''
         }
         failure {
-            echo 'BUILD FAILED. Check Console Output above for the error.'
+            echo '❌ FAILURE: Check Console Output for error details.'
         }
     }
 }
